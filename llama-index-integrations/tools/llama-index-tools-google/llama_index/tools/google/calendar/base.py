@@ -38,12 +38,14 @@ class GoogleCalendarToolSpec(BaseToolSpec):
         self,
         number_of_results: Optional[int] = 100,
         start_date: Optional[Union[str, datetime.date]] = None,
+        calendar_id: Optional[str] = "primary",
     ) -> List[Document]:
         """Load data from user's calendar.
 
         Args:
             number_of_results (Optional[int]): the number of events to return. Defaults to 100.
             start_date (Optional[Union[str, datetime.date]]): the start date to return events from in date isoformat. Defaults to today.
+            calendar_id Optional[str]: The id of the calendar to load events from. Defaults to "primary".
         """
         from googleapiclient.discovery import build
 
@@ -61,7 +63,7 @@ class GoogleCalendarToolSpec(BaseToolSpec):
         events_result = (
             service.events()
             .list(
-                calendarId="primary",
+                calendarId=calendar_id,
                 timeMin=start_datetime_utc,
                 maxResults=number_of_results,
                 singleEvents=True,
@@ -145,6 +147,7 @@ class GoogleCalendarToolSpec(BaseToolSpec):
         start_datetime: Optional[Union[str, datetime.datetime]] = None,
         end_datetime: Optional[Union[str, datetime.datetime]] = None,
         attendees: Optional[List[str]] = None,
+        calendar_id: Optional[str] = "primary",
     ) -> str:
         """
             Create an event on the users calendar.
@@ -156,6 +159,7 @@ class GoogleCalendarToolSpec(BaseToolSpec):
             start_datetime Optional[Union[str, datetime.datetime]]: The start datetime for the event
             end_datetime Optional[Union[str, datetime.datetime]]: The end datetime for the event
             attendees Optional[List[str]]: A list of email address to invite to the event
+            calendar_id Optional[str]: The id of the calendar to create the event on. Defaults to "primary".
         """
         from googleapiclient.discovery import build
 
@@ -189,7 +193,7 @@ class GoogleCalendarToolSpec(BaseToolSpec):
             },
             "attendees": attendees_list,
         }
-        event = service.events().insert(calendarId="primary", body=event).execute()
+        event = service.events().insert(calendarId=calendar_id, body=event).execute()
         return (
             "Your calendar event has been created successfully! You can move on to the"
             " next step."
